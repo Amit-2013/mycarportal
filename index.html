@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
-    <title>Car Portal</title>
+    <title>Image Gallery</title>
+    <style>
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Car Portal</h1>
-        <nav>
-            <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
-            <a href="dashboard.html">Dashboard</a>
-        </nav>
-    </header>
+    <h1>Image Gallery</h1>
 
-    <main>
-        <section>
-            <h2>Latest Blogs</h2>
-            <div id="blogs"></div>
-        </section>
-    </main>
+    <form id="imageUploadForm">
+        <input type="file" id="imageFile" accept="image/*" required>
+        <button type="submit">Upload Image</button>
+    </form>
 
-    <script src="js/scripts.js"></script>
+    <div id="gallery">
+        <!-- Images will be displayed here -->
+    </div>
+
+    <script src="scripts.js"></script>
 </body>
 </html>
