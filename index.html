@@ -14,9 +14,9 @@
     <!-- Tabs Navigation -->
     <nav>
         <ul>
-            <li><a href="#feedback">Feedback</a></li>
-            <li><a href="#blog">Blog</a></li>
-            <li><a href="#photo">Upload Photo</a></li>
+            <li><a href="#feedback" class="tab-link" data-tab="feedback">Feedback</a></li>
+            <li><a href="#blog" class="tab-link" data-tab="blog">Blog</a></li>
+            <li><a href="#photo" class="tab-link" data-tab="photo">Upload Photo</a></li>
         </ul>
     </nav>
 
@@ -106,122 +106,142 @@
     </div>
 
     <script>
-        // Fetch car data from backend and populate common form fields
-        fetch('http://127.0.0.1:5000/api/car_data')
-            .then(response => response.json())
-            .then(data => {
-                populateSelect('commonManufacturer', data.manufacturers);
-                populateSelect('commonModel', data.models[data.manufacturers[0]]);
-                populateSelect('commonColor', data.colors);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Function to show the correct tab
+            function showTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.style.display = tab.id === tabId ? 'block' : 'none';
+                });
+            }
 
-                populateSelect('commonManufacturerBlog', data.manufacturers);
-                populateSelect('commonModelBlog', data.models[data.manufacturers[0]]);
-                populateSelect('commonColorBlog', data.colors);
+            // Initialize with the first tab
+            showTab('feedback');
 
-                populateSelect('commonManufacturerPhoto', data.manufacturers);
-                populateSelect('commonModelPhoto', data.models[data.manufacturers[0]]);
-                populateSelect('commonColorPhoto', data.colors);
+            // Event listener for tab links
+            document.querySelectorAll('.tab-link').forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    showTab(event.target.getAttribute('data-tab'));
+                });
             });
 
-        function populateSelect(id, options) {
-            const select = document.getElementById(id);
-            select.innerHTML = ''; // Clear any existing options
-            options.forEach(option => {
-                const opt = document.createElement('option');
-                opt.value = option;
-                opt.innerHTML = option;
-                select.appendChild(opt);
-            });
-        }
-
-        // Populate models based on selected manufacturer
-        document.getElementById('commonManufacturer').addEventListener('change', function() {
-            const manufacturer = this.value;
-            fetchModels('commonModel', manufacturer);
-        });
-
-        document.getElementById('commonManufacturerBlog').addEventListener('change', function() {
-            const manufacturer = this.value;
-            fetchModels('commonModelBlog', manufacturer);
-        });
-
-        document.getElementById('commonManufacturerPhoto').addEventListener('change', function() {
-            const manufacturer = this.value;
-            fetchModels('commonModelPhoto', manufacturer);
-        });
-
-        function fetchModels(selectId, manufacturer) {
+            // Fetch car data from backend and populate common form fields
             fetch('http://127.0.0.1:5000/api/car_data')
                 .then(response => response.json())
                 .then(data => {
-                    const models = data.models[manufacturer] || [];
-                    populateSelect(selectId, models);
+                    populateSelect('commonManufacturer', data.manufacturers);
+                    populateSelect('commonModel', data.models[data.manufacturers[0]]);
+                    populateSelect('commonColor', data.colors);
+
+                    populateSelect('commonManufacturerBlog', data.manufacturers);
+                    populateSelect('commonModelBlog', data.models[data.manufacturers[0]]);
+                    populateSelect('commonColorBlog', data.colors);
+
+                    populateSelect('commonManufacturerPhoto', data.manufacturers);
+                    populateSelect('commonModelPhoto', data.models[data.manufacturers[0]]);
+                    populateSelect('commonColorPhoto', data.colors);
                 });
-        }
 
-        // Handle feedback form submission
-        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = {
-                manufacturer: document.getElementById('commonManufacturer').value,
-                model: document.getElementById('commonModel').value,
-                color: document.getElementById('commonColor').value,
-                feedback: document.getElementById('feedback').value,
-                rating: document.getElementById('feedbackRating').value
-            };
+            function populateSelect(id, options) {
+                const select = document.getElementById(id);
+                select.innerHTML = ''; // Clear any existing options
+                options.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option;
+                    opt.innerHTML = option;
+                    select.appendChild(opt);
+                });
+            }
 
-            fetch('http://127.0.0.1:5000/api/feedback', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => alert('Feedback submitted successfully!'))
-            .catch(error => console.error('Error:', error));
-        });
+            // Populate models based on selected manufacturer
+            document.getElementById('commonManufacturer').addEventListener('change', function() {
+                const manufacturer = this.value;
+                fetchModels('commonModel', manufacturer);
+            });
 
-        // Handle blog form submission
-        document.getElementById('blogForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = {
-                manufacturer: document.getElementById('commonManufacturerBlog').value,
-                model: document.getElementById('commonModelBlog').value,
-                color: document.getElementById('commonColorBlog').value,
-                blog_content: document.getElementById('blog_content').value,
-                rating: document.getElementById('blogRating').value
-            };
+            document.getElementById('commonManufacturerBlog').addEventListener('change', function() {
+                const manufacturer = this.value;
+                fetchModels('commonModelBlog', manufacturer);
+            });
 
-            fetch('http://127.0.0.1:5000/api/blog', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => alert('Blog submitted successfully!'))
-            .catch(error => console.error('Error:', error));
-        });
+            document.getElementById('commonManufacturerPhoto').addEventListener('change', function() {
+                const manufacturer = this.value;
+                fetchModels('commonModelPhoto', manufacturer);
+            });
 
-        // Handle photo upload form submission
-        document.getElementById('photoUploadForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData();
-            formData.append('manufacturer', document.getElementById('commonManufacturerPhoto').value);
-            formData.append('model', document.getElementById('commonModelPhoto').value);
-            formData.append('color', document.getElementById('commonColorPhoto').value);
-            formData.append('file', document.getElementById('file').files[0]);
-            formData.append('rating', document.getElementById('photoRating').value);
+            function fetchModels(selectId, manufacturer) {
+                fetch('http://127.0.0.1:5000/api/car_data')
+                    .then(response => response.json())
+                    .then(data => {
+                        const models = data.models[manufacturer] || [];
+                        populateSelect(selectId, models);
+                    });
+            }
 
-            fetch('http://127.0.0.1:5000/api/upload_photos', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => alert('Photo uploaded successfully!'))
-            .catch(error => console.error('Error:', error));
+            // Handle feedback form submission
+            document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = {
+                    manufacturer: document.getElementById('commonManufacturer').value,
+                    model: document.getElementById('commonModel').value,
+                    color: document.getElementById('commonColor').value,
+                    feedback: document.getElementById('feedback').value,
+                    rating: document.getElementById('feedbackRating').value
+                };
+
+                fetch('http://127.0.0.1:5000/api/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => alert('Feedback submitted successfully!'))
+                .catch(error => console.error('Error:', error));
+            });
+
+            // Handle blog form submission
+            document.getElementById('blogForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = {
+                    manufacturer: document.getElementById('commonManufacturerBlog').value,
+                    model: document.getElementById('commonModelBlog').value,
+                    color: document.getElementById('commonColorBlog').value,
+                    blog_content: document.getElementById('blog_content').value,
+                    rating: document.getElementById('blogRating').value
+                };
+
+                fetch('http://127.0.0.1:5000/api/blog', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => alert('Blog submitted successfully!'))
+                .catch(error => console.error('Error:', error));
+            });
+
+            // Handle photo upload form submission
+            document.getElementById('photoUploadForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData();
+                formData.append('manufacturer', document.getElementById('commonManufacturerPhoto').value);
+                formData.append('model', document.getElementById('commonModelPhoto').value);
+                formData.append('color', document.getElementById('commonColorPhoto').value);
+                formData.append('file', document.getElementById('file').files[0]);
+                formData.append('rating', document.getElementById('photoRating').value);
+
+                fetch('http://127.0.0.1:5000/api/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => alert('Photo uploaded successfully!'))
+                .catch(error => console.error('Error:', error));
+            });
         });
     </script>
 </body>
