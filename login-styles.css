@@ -52,13 +52,15 @@ button:hover {
     background-color: #555;
 }
 
-.forgot-password {
+.forgot-password,
+.register-link {
     display: block;
     margin-top: 10px;
     text-decoration: none;
     color: #333;
 }
 
-.forgot-password:hover {
+.forgot-password:hover,
+.register-link:hover {
     text-decoration: underline;
 }
