@@ -37,6 +37,7 @@ nav ul li a:hover {
 }
 
 .tab-content {
+    display: none;
     padding: 20px;
     margin: 20px;
     border: 1px solid #ddd;
