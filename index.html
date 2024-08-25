@@ -3,25 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Gallery</title>
-    <style>
-        #gallery {
-            display: flex;
-            flex-wrap: wrap;
-        }
-    </style>
+    <title>Car Feedback and Blog</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Image Gallery</h1>
+    <h1>Car Feedback and Blog</h1>
 
-    <form id="imageUploadForm">
-        <input type="file" id="imageFile" accept="image/*" required>
-        <button type="submit">Upload Image</button>
+    <!-- Car Selection Form -->
+    <form id="car-form">
+        <label for="manufacturer">Select Manufacturer:</label>
+        <select id="manufacturer" name="manufacturer"></select>
+
+        <label for="model">Select Model:</label>
+        <select id="model" name="model"></select>
+
+        <label for="color">Select Color:</label>
+        <select id="color" name="color"></select>
+
+        <label for="feedback">Feedback:</label>
+        <textarea id="feedback" name="feedback"></textarea>
+
+        <label for="blog">Write Blog:</label>
+        <textarea id="blog" name="blog"></textarea>
+
+        <label for="photo">Upload Car Delivery Photo:</label>
+        <input type="file" id="photo" name="photo">
+
+        <button type="button" onclick="submitForm()">Submit</button>
     </form>
-
-    <div id="gallery">
-        <!-- Images will be displayed here -->
-    </div>
 
     <script src="scripts.js"></script>
 </body>
