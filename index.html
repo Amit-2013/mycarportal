@@ -3,51 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Feedback, Blog, and Photo Upload</title>
+    <title>My Car Portal</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Car Feedback, Blog, and Photo Upload</h1>
-    
-    <!-- Common Manufacturer, Model, and Color Selection -->
-    <div>
-        <label for="commonManufacturer">Manufacturer</label>
-        <select id="commonManufacturer" name="manufacturer"></select>
+    <header>
+        <h1>My Car Portal</h1>
+    </header>
 
-        <label for="commonModel">Model</label>
-        <select id="commonModel" name="model"></select>
+    <!-- Tabs Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#feedback">Feedback</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#photo">Upload Photo</a></li>
+        </ul>
+    </nav>
 
-        <label for="commonColor">Color</label>
-        <select id="commonColor" name="color"></select>
-    </div>
-
-    <!-- Feedback Form -->
-    <div>
+    <!-- Tabs Content -->
+    <div id="feedback" class="tab-content">
         <h2>Submit Feedback</h2>
         <form id="feedbackForm">
+            <label for="commonManufacturer">Manufacturer</label>
+            <select id="commonManufacturer" name="manufacturer"></select>
+
+            <label for="commonModel">Model</label>
+            <select id="commonModel" name="model"></select>
+
+            <label for="commonColor">Color</label>
+            <select id="commonColor" name="color"></select>
+
             <label for="feedback">Feedback</label>
             <textarea id="feedback" name="feedback" rows="4"></textarea>
+
+            <label for="feedbackRating">Rating</label>
+            <select id="feedbackRating" name="rating">
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
 
             <button type="submit">Submit Feedback</button>
         </form>
     </div>
 
-    <!-- Blog Form -->
-    <div>
+    <div id="blog" class="tab-content">
         <h2>Write a Blog</h2>
         <form id="blogForm">
+            <label for="commonManufacturerBlog">Manufacturer</label>
+            <select id="commonManufacturerBlog" name="manufacturer"></select>
+
+            <label for="commonModelBlog">Model</label>
+            <select id="commonModelBlog" name="model"></select>
+
+            <label for="commonColorBlog">Color</label>
+            <select id="commonColorBlog" name="color"></select>
+
             <label for="blog_content">Blog Content</label>
             <textarea id="blog_content" name="blog_content" rows="4"></textarea>
+
+            <label for="blogRating">Rating</label>
+            <select id="blogRating" name="rating">
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
 
             <button type="submit">Submit Blog</button>
         </form>
     </div>
 
-    <!-- Photo Upload Form -->
-    <div>
+    <div id="photo" class="tab-content">
         <h2>Upload a Photo</h2>
         <form id="photoUploadForm" enctype="multipart/form-data">
+            <label for="commonManufacturerPhoto">Manufacturer</label>
+            <select id="commonManufacturerPhoto" name="manufacturer"></select>
+
+            <label for="commonModelPhoto">Model</label>
+            <select id="commonModelPhoto" name="model"></select>
+
+            <label for="commonColorPhoto">Color</label>
+            <select id="commonColorPhoto" name="color"></select>
+
             <label for="file">Upload Photo</label>
             <input type="file" id="file" name="file">
+
+            <label for="photoRating">Rating</label>
+            <select id="photoRating" name="rating">
+                <option value="1">1 Star</option>
+                <option value="2">2 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="5">5 Stars</option>
+            </select>
 
             <button type="submit">Upload Photo</button>
         </form>
@@ -61,6 +113,14 @@
                 populateSelect('commonManufacturer', data.manufacturers);
                 populateSelect('commonModel', data.models[data.manufacturers[0]]);
                 populateSelect('commonColor', data.colors);
+
+                populateSelect('commonManufacturerBlog', data.manufacturers);
+                populateSelect('commonModelBlog', data.models[data.manufacturers[0]]);
+                populateSelect('commonColorBlog', data.colors);
+
+                populateSelect('commonManufacturerPhoto', data.manufacturers);
+                populateSelect('commonModelPhoto', data.models[data.manufacturers[0]]);
+                populateSelect('commonColorPhoto', data.colors);
             });
 
         function populateSelect(id, options) {
@@ -80,6 +140,16 @@
             fetchModels('commonModel', manufacturer);
         });
 
+        document.getElementById('commonManufacturerBlog').addEventListener('change', function() {
+            const manufacturer = this.value;
+            fetchModels('commonModelBlog', manufacturer);
+        });
+
+        document.getElementById('commonManufacturerPhoto').addEventListener('change', function() {
+            const manufacturer = this.value;
+            fetchModels('commonModelPhoto', manufacturer);
+        });
+
         function fetchModels(selectId, manufacturer) {
             fetch('http://127.0.0.1:5000/api/car_data')
                 .then(response => response.json())
@@ -96,7 +166,8 @@
                 manufacturer: document.getElementById('commonManufacturer').value,
                 model: document.getElementById('commonModel').value,
                 color: document.getElementById('commonColor').value,
-                feedback: document.getElementById('feedback').value
+                feedback: document.getElementById('feedback').value,
+                rating: document.getElementById('feedbackRating').value
             };
 
             fetch('http://127.0.0.1:5000/api/feedback', {
@@ -115,10 +186,11 @@
         document.getElementById('blogForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = {
-                manufacturer: document.getElementById('commonManufacturer').value,
-                model: document.getElementById('commonModel').value,
-                color: document.getElementById('commonColor').value,
-                blog_content: document.getElementById('blog_content').value
+                manufacturer: document.getElementById('commonManufacturerBlog').value,
+                model: document.getElementById('commonModelBlog').value,
+                color: document.getElementById('commonColorBlog').value,
+                blog_content: document.getElementById('blog_content').value,
+                rating: document.getElementById('blogRating').value
             };
 
             fetch('http://127.0.0.1:5000/api/blog', {
@@ -137,10 +209,11 @@
         document.getElementById('photoUploadForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData();
-            formData.append('manufacturer', document.getElementById('commonManufacturer').value);
-            formData.append('model', document.getElementById('commonModel').value);
-            formData.append('color', document.getElementById('commonColor').value);
+            formData.append('manufacturer', document.getElementById('commonManufacturerPhoto').value);
+            formData.append('model', document.getElementById('commonModelPhoto').value);
+            formData.append('color', document.getElementById('commonColorPhoto').value);
             formData.append('file', document.getElementById('file').files[0]);
+            formData.append('rating', document.getElementById('photoRating').value);
 
             fetch('http://127.0.0.1:5000/api/upload_photos', {
                 method: 'POST',
