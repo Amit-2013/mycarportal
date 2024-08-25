@@ -1,37 +1,223 @@
+<!-- frontend/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Feedback and Blog</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>My Car Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Car Feedback and Blog</h1>
+    <div class="container">
+        <h1>My Car Portal</h1>
 
-    <!-- Car Selection Form -->
-    <form id="car-form">
-        <label for="manufacturer">Select Manufacturer:</label>
-        <select id="manufacturer" name="manufacturer"></select>
+        <!-- Feedback Form -->
+        <form id="feedbackForm">
+            <label for="manufacturer">Manufacturer</label>
+            <select id="manufacturer" name="manufacturer"></select>
 
-        <label for="model">Select Model:</label>
-        <select id="model" name="model"></select>
+            <label for="model">Model</label>
+            <select id="model" name="model"></select>
 
-        <label for="color">Select Color:</label>
-        <select id="color" name="color"></select>
+            <label for="color">Color</label>
+            <select id="color" name="color"></select>
 
-        <label for="feedback">Feedback:</label>
-        <textarea id="feedback" name="feedback"></textarea>
+            <label for="feedback">Feedback</label>
+            <textarea id="feedback" name="feedback" rows="4"></textarea>
 
-        <label for="blog">Write Blog:</label>
-        <textarea id="blog" name="blog"></textarea>
+            <button type="submit">Submit Feedback</button>
+        </form>
 
-        <label for="photo">Upload Car Delivery Photo:</label>
-        <input type="file" id="photo" name="photo">
+        <!-- Blog Form -->
+        <form id="blogForm">
+            <label for="manufacturer">Manufacturer</label>
+            <select id="blogManufacturer" name="manufacturer"></select>
 
-        <button type="button" onclick="submitForm()">Submit</button>
-    </form>
+            <label for="model">Model</label>
+            <select id="blogModel" name="model"></select>
 
-    <script src="scripts.js"></script>
+            <label for="color">Color</label>
+            <select id="blogColor" name="color"></select>
+
+            <label for="blog_content">Blog Content</label>
+            <textarea id="blog_content" name="blog_content" rows="4"></textarea>
+
+            <button type="submit">Submit Blog</button>
+        </form>
+
+        <!-- Photo Upload Form -->
+        <form id="photoUploadForm" enctype="multipart/form-data">
+            <label for="photoManufacturer">Manufacturer</label>
+            <select id="photoManufacturer" name="manufacturer"></select>
+
+            <label for="photoModel">Model</label>
+            <select id="photoModel" name="model"></select>
+
+            <label for="photoColor">Color</label>
+            <select id="photoColor" name="color"></select>
+
+            <label for="file">Upload Photo</label>
+            <input type="file" id="file" name="file">
+
+            <button type="submit">Upload Photo</button>
+        </form>
+    </div>
+
+    <script>
+        // Fetch car data from backend and populate form fields
+        fetch('http://127.0.0.1:5000/api/car_data')
+            .then(response => response.json())
+            .then(data => {
+                populateSelect('manufacturer', data.manufacturers);
+                populateSelect('blogManufacturer', data.manufacturers);
+                populateSelect('photoManufacturer', data.manufacturers);
+                populateSelect('color', data.colors);
+                populateSelect('blogColor', data.colors);
+                populateSelect('photoColor', data.colors);
+            });
+
+        function populateSelect(id, options) {
+            const select = document.getElementById(id);
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.innerHTML = option;
+                select.appendChild(opt);
+            });
+        }
+
+        // Populate models based on selected manufacturer
+        document.getElementById('manufacturer').addEventListener('change', function() {
+            const manufacturer = this.value;
+            fetchModels('model', manufacturer);
+        });
+
+        document.getElementById('blogManufacturer').addEventListener('change', function() {
+            const manufacturer = this.value;
+            fetchModels('blogModel', manufacturer);
+        });
+
+        document.getElementById('photoManufacturer').addEventListener('change', function() {
+            const manufacturer = this.value;
+            fetchModels('photoModel', manufacturer);
+        });
+
+        function fetchModels(selectId, manufacturer) {
+            fetch('http://127.0.0.1:5000/api/car_data')
+                .then(response => response.json())
+                .then(data => {
+                    const models = data.models[manufacturer] || [];
+                    populateSelect(selectId, models);
+                });
+        }
+
+        // Handle feedback form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = {
+                manufacturer: document.getElementById('manufacturer').value,
+                model: document.getElementById('model').value,
+                color: document.getElementById('color').value,
+                feedback: document.getElementById('feedback').value
+            };
+
+            fetch('http://127.0.0.1:5000/api/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => alert('Feedback submitted successfully!'))
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Handle blog form submission
+        document.getElementById('blogForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = {
+                manufacturer: document.getElementById('blogManufacturer').value,
+                model: document.getElementById('blogModel').value,
+                color: document.getElementById('blogColor').value,
+                blog_content: document.getElementById('blog_content').value
+            };
+
+            fetch('http://127.0.0.1:5000/api/blog', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => alert('Blog submitted successfully!'))
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Handle photo upload form submission
+        document.getElementById('photoUploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('manufacturer', document.getElementById('photoManufacturer').value);
+            formData.append('model', document.getElementById('photoModel').value);
+            formData.append('color', document.getElementById('photoColor').value);
+            formData.append('file', document.getElementById('file').files[0]);
+
+            fetch('http://127.0.0.1:5000/api/upload_photos', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => alert('Photo uploaded successfully!'))
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 </body>
 </html>
